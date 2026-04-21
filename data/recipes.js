@@ -6,7 +6,7 @@ export const recipes = [
     category: "dumplings",
     difficulty: { ge: "საშუალო", en: "Medium" },
     prepTime: 90,
-    imageUrl: "https://tse1.mm.bing.net/th/id/OIP.BfKSLBF7IfhCutjk3y6ogAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3",
+    imageUrl: "https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=800&q=80",
     title: {
       ge: "ხინკალი",
       en: "Khinkali",
