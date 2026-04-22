@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Upload, Plus, Trash2, Save, ChefHat } from 'lucide-react';
