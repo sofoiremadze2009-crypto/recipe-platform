@@ -1,13 +1,14 @@
 'use client';
-import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+
+import { useState, useEffect } from 'react';
 import { Upload, Plus, Trash2, Save, ChefHat } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
-
+export default function AdminPage() {
+  const [supabase] = useState(() => createClient(
+    'https://bprjjnhsejfudktgpwmt.supabase.co',
+    'sb_publishable_Xn68wkiqRhq0fJ7Ajud_rQ_JtjhHwQa'
+  ));
 export default function AdminPage() {
   const [form, setForm] = useState({
     slug: '', country_ge: '', country_en: '', country_code: '',
