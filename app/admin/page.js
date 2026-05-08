@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { Upload, Plus, Trash2, Save, ChefHat } from 'lucide-react';
+import { Upload, Plus, Trash2, Save, ChefHat, Image } from 'lucide-react';
 
 const supabase = createClient(
   'https://bprjjnhsejfudktgpwmt.supabase.co',
@@ -16,7 +16,7 @@ export default function AdminPage() {
     title_ge: '', title_en: '', description_ge: '', description_en: '',
   });
   const [ingredients, setIngredients] = useState([{ ge: '', en: '' }]);
-  const [instructions, setInstructions] = useState([{ ge: '', en: '' }]);
+  const [instructions, setInstructions] = useState([{ ge: '', en: '', image_url: '' }]);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -60,12 +60,12 @@ export default function AdminPage() {
         ingredients.map((ing, i) => ({ recipe_id: recipe.id, text_ge: ing.ge, text_en: ing.en, order_index: i }))
       );
       await supabase.from('instructions').insert(
-        instructions.map((ins, i) => ({ recipe_id: recipe.id, text_ge: ins.ge, text_en: ins.en, step_number: i + 1 }))
+        instructions.map((ins, i) => ({ recipe_id: recipe.id, text_ge: ins.ge, text_en: ins.en, step_number: i + 1, image_url: ins.image_url || null }))
       );
       setMessage('✅ რეცეპტი წარმატებით დაემატა!');
       setForm({ slug: '', country_ge: '', country_en: '', country_code: '', category: '', difficulty_ge: '', difficulty_en: '', prep_time: '', title_ge: '', title_en: '', description_ge: '', description_en: '' });
       setIngredients([{ ge: '', en: '' }]);
-      setInstructions([{ ge: '', en: '' }]);
+      setInstructions([{ ge: '', en: '', image_url: '' }]);
       setImageFile(null);
       setImagePreview(null);
     } catch (err) {
@@ -91,6 +91,7 @@ export default function AdminPage() {
           </div>
         </div>
         <div className="space-y-6">
+          {/* Basic Info */}
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-[#1a120a] mb-5">ძირითადი ინფო</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -127,6 +128,8 @@ export default function AdminPage() {
               </div>
             </div>
           </div>
+
+          {/* Title & Description */}
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-[#1a120a] mb-5">სათაური და აღწერა</h2>
             <div className="space-y-4">
@@ -138,8 +141,10 @@ export default function AdminPage() {
               <div><label className={labelClass}>აღწერა (ინგლ.)</label><textarea className={inputClass} rows={3} value={form.description_en} onChange={e => setForm({...form, description_en: e.target.value})} /></div>
             </div>
           </div>
+
+          {/* Image Upload */}
           <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-[#1a120a] mb-5">სურათი</h2>
+            <h2 className="text-xl font-semibold text-[#1a120a] mb-5">მთავარი სურათი</h2>
             <div className="flex gap-6 items-start">
               <label className="flex-1 flex flex-col items-center justify-center h-40 border-2 border-dashed border-[#f5e6cc] rounded-xl cursor-pointer hover:border-[#c1704a] transition-colors bg-[#fdf6ec]">
                 <Upload size={24} className="text-[#c1704a] mb-2" />
@@ -150,6 +155,8 @@ export default function AdminPage() {
               {imagePreview && <div className="w-40 h-40 rounded-xl overflow-hidden shrink-0"><img src={imagePreview} alt="preview" className="w-full h-full object-cover" /></div>}
             </div>
           </div>
+
+          {/* Ingredients */}
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-[#1a120a] mb-5">ინგრედიენტები</h2>
             <div className="space-y-3">
@@ -164,22 +171,40 @@ export default function AdminPage() {
               <button onClick={() => setIngredients([...ingredients, {ge:'',en:''}])} className="flex items-center gap-2 text-sm text-[#c1704a] mt-2"><Plus size={16} /> ინგრედიენტის დამატება</button>
             </div>
           </div>
+
+          {/* Instructions with image */}
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-[#1a120a] mb-5">მომზადების ნაბიჯები</h2>
-            <div className="space-y-4">
+            <div className="space-y-6">
               {instructions.map((ins, i) => (
-                <div key={i} className="flex gap-3 items-start">
-                  <span className="text-xs text-[#2d5a27] font-medium w-5 mt-3">{i+1}.</span>
-                  <div className="flex-1 space-y-2">
+                <div key={i} className="border border-[#f5e6cc] rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-[#c1704a]">ნაბიჯი {i+1}</span>
+                    <button onClick={() => setInstructions(instructions.filter((_,idx)=>idx!==i))} className="text-rose-400 hover:text-rose-600"><Trash2 size={16} /></button>
+                  </div>
+                  <div className="space-y-3">
                     <textarea className={inputClass} rows={2} placeholder="ქართულად" value={ins.ge} onChange={e => { const u=[...instructions]; u[i].ge=e.target.value; setInstructions(u); }} />
                     <textarea className={inputClass} rows={2} placeholder="English" value={ins.en} onChange={e => { const u=[...instructions]; u[i].en=e.target.value; setInstructions(u); }} />
+                    {/* Step image URL */}
+                    <div className="flex gap-3 items-center">
+                      <Image size={16} className="text-[#7a6452] shrink-0" />
+                      <input
+                        className={inputClass}
+                        placeholder="ნაბიჯის ფოტოს URL (Unsplash-იდან) — სურვილისამებრ"
+                        value={ins.image_url}
+                        onChange={e => { const u=[...instructions]; u[i].image_url=e.target.value; setInstructions(u); }}
+                      />
+                      {ins.image_url && (
+                        <img src={ins.image_url} alt="step" className="w-16 h-16 rounded-lg object-cover shrink-0" />
+                      )}
+                    </div>
                   </div>
-                  <button onClick={() => setInstructions(instructions.filter((_,idx)=>idx!==i))} className="text-rose-400 hover:text-rose-600 mt-3"><Trash2 size={16} /></button>
                 </div>
               ))}
-              <button onClick={() => setInstructions([...instructions, {ge:'',en:''}])} className="flex items-center gap-2 text-sm text-[#2d5a27] mt-2"><Plus size={16} /> ნაბიჯის დამატება</button>
+              <button onClick={() => setInstructions([...instructions, {ge:'',en:'',image_url:''}])} className="flex items-center gap-2 text-sm text-[#2d5a27] mt-2"><Plus size={16} /> ნაბიჯის დამატება</button>
             </div>
           </div>
+
           {message && <div className={`p-4 rounded-xl text-sm ${message.includes('✅') ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>{message}</div>}
           <button onClick={handleSubmit} disabled={loading} className="w-full flex items-center justify-center gap-2 py-4 bg-[#c1704a] hover:bg-[#9a4f2a] disabled:opacity-50 text-white rounded-xl font-medium transition-all">
             <Save size={18} />
