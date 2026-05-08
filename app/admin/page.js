@@ -1,6 +1,4 @@
-bash
 
-cat > /home/claude/recipe-platform/app/admin/page.js << 'ENDOFFILE'
 'use client';
 
 import { useState } from 'react';
