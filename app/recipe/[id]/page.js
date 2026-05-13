@@ -116,6 +116,12 @@ export default function RecipePage() {
                 <ChefHat size={14} />
                 <span>{sortedIngredients.length} {lang === 'ge' ? 'ინგრედიენტი' : 'ingredients'}</span>
               </div>
+              {recipe.calories && (
+                <div className="flex items-center gap-1.5 text-white/80 text-sm">
+                  <span>🔥</span>
+                  <span>{recipe.calories} kcal</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
