@@ -130,7 +130,7 @@ export default function AdminPage() {
                 <label className={labelClass}>კატეგორია</label>
                 <select className={inputClass} value={form.category} onChange={e => setForm({...form, category: e.target.value})}>
                   <option value="">აირჩიე</option>
-                  {['soup','pasta','dumplings','curry','street-food'].map(c => <option key={c} value={c}>{c}</option>)}
+                  {['soup','pasta','dumplings','curry','street-food','desert'].map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
