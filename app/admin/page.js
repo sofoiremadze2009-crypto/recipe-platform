@@ -33,6 +33,7 @@ export default function AdminPage() {
     slug: '', country_ge: '', country_en: '', country_code: '',
     category: '', difficulty_ge: '', difficulty_en: '', prep_time: '',
     title_ge: '', title_en: '', description_ge: '', description_en: '',
+    calories: '',
   });
   const [ingredients, setIngredients] = useState([{ ge: '', en: '' }]);
   const [instructions, setInstructions] = useState([{ ge: '', en: '', image_url: '', image_file: null, image_preview: null }]);
@@ -69,7 +70,7 @@ export default function AdminPage() {
       }
       const { data: recipe, error: recipeError } = await supabase
         .from('recipes')
-        .insert({ ...form, prep_time: parseInt(form.prep_time) || 0, image_url: mainImageUrl })
+        .insert({ ...form, prep_time: parseInt(form.prep_time) || 0, calories: parseInt(form.calories) || null, image_url: mainImageUrl })
         .select().single();
       if (recipeError) throw recipeError;
       await supabase.from('ingredients').insert(
@@ -88,7 +89,7 @@ export default function AdminPage() {
       );
       await supabase.from('instructions').insert(instructionRows);
       setMessage('✅ რეცეპტი წარმატებით დაემატა!');
-      setForm({ slug: '', country_ge: '', country_en: '', country_code: '', category: '', difficulty_ge: '', difficulty_en: '', prep_time: '', title_ge: '', title_en: '', description_ge: '', description_en: '' });
+      setForm({ slug: '', country_ge: '', country_en: '', country_code: '', category: '', difficulty_ge: '', difficulty_en: '', prep_time: '', calories: '', title_ge: '', title_en: '', description_ge: '', description_en: '' });
       setIngredients([{ ge: '', en: '' }]);
       setInstructions([{ ge: '', en: '', image_url: '', image_file: null, image_preview: null }]);
       setMainImageFile(null);
@@ -119,7 +120,7 @@ export default function AdminPage() {
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-[#1a120a] mb-5">ძირითადი ინფო</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[['slug','Slug (URL)','khinkali'],['prep_time','დრო (წუთი)','90'],['country_ge','ქვეყანა (ქართ.)','საქართველო'],['country_en','ქვეყანა (ინგლ.)','Georgia'],['country_code','ქვეყნის კოდი','GE']].map(([key, label, ph]) => (
+              {[['slug','Slug (URL)','khinkali'],['prep_time','დრო (წუთი)','90'],['calories','კალორია (kcal)','350'],['country_ge','ქვეყანა (ქართ.)','საქართველო'],['country_en','ქვეყანა (ინგლ.)','Georgia'],['country_code','ქვეყნის კოდი','GE']].map(([key, label, ph]) => (
                 <div key={key}>
                   <label className={labelClass}>{label}</label>
                   <input className={inputClass} placeholder={ph} value={form[key]} onChange={e => setForm({...form, [key]: e.target.value})} />
@@ -129,7 +130,7 @@ export default function AdminPage() {
                 <label className={labelClass}>კატეგორია</label>
                 <select className={inputClass} value={form.category} onChange={e => setForm({...form, category: e.target.value})}>
                   <option value="">აირჩიე</option>
-                  {['soup','pasta','dumplings','curry','street-food','desert',].map(c => <option key={c} value={c}>{c}</option>)}
+                  {['soup','pasta','dumplings','curry','street-food'].map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
